@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   signInWithRedirect,
   signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
@@ -95,4 +96,8 @@ export const signOutAuthUser = async () => {
   } catch (error) {
     console.error("Error signing out", error);
   }
+};
+
+export const onAuthStateChangedListener = (callback) => {
+  return onAuthStateChanged(auth, callback);
 };
