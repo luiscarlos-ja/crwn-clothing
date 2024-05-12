@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
 import "./sign-in-form.styles.scss";
+
+import { UserContext } from "../../context/user.context";
 
 import {
   signInWithGooglePopup,
@@ -18,6 +20,7 @@ const defaultFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
+  const { setCurrentUser } = useContext(UserContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,18 +39,14 @@ const SignInForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { user } = signInAuthUserWithEmailAndPassword(email, password);
+      const { user } = await signInAuthUserWithEmailAndPassword(
+        email,
+        password
+      );
+      setCurrentUser(user);
       resetFormFields();
     } catch (error) {
-      if (error.code === "auth/wrong-password") {
-        alert("Incorrect password. Please try again.");
-      } else if (error.code === "auth/user-not-found") {
-        alert("User not found. Please sign up.");
-      } else if (error.code === "auth/invalid-credential") {
-        alert("Invalid credentials. Please try again.");
-      } else {
-        console.error("Error signing in", error);
-      }
+      console.error("Error signing in", error);
     }
   };
 

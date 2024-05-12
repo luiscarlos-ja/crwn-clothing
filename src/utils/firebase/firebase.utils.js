@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithRedirect,
+  signOut,
 } from "firebase/auth";
 
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
@@ -62,10 +63,36 @@ export const createUserDocumentFromAuth = async (
 
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
-  return await createUserWithEmailAndPassword(auth, email, password);
+  try {
+    return await createUserWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    if (error.code === "auth/email-already-in-use") {
+      alert("Email already in use");
+    }
+  }
 };
 
 export const signInAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
-  return await signInWithEmailAndPassword(auth, email, password);
+  try {
+    return await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    if (error.code === "auth/wrong-password") {
+      alert("Incorrect password. Please try again.");
+    } else if (error.code === "auth/user-not-found") {
+      alert("User not found. Please sign up.");
+    } else if (error.code === "auth/invalid-credential") {
+      alert("Invalid credentials. Please try again.");
+    } else {
+      console.error("Error signing in", error);
+    }
+  }
+};
+
+export const signOutAuthUser = async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Error signing out", error);
+  }
 };
